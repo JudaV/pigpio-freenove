@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 	printf("pigpio initialized\n");
 	printf("Using GPIO-pins %d and %d \n", Buzzer, Button);	// Output information on terminal
 	gpioSetPullUpDown(Button, PI_PUD_UP);   // Sets a pull-up
-    gpioSetMode(Buzzer, PI_OUTPUT);        	// Set GPIO17 as output
+	gpioSetMode(Buzzer, PI_OUTPUT);        	// Set GPIO17 as output
     
 	signal(SIGINT, intHandler);				// upon ^C the signal function is called to terminate the process;
 											// intHandler will change the variable keepRunning form 1 to 0
