@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 	
 	while(keepRunning)
 	{
-        level = gpioRead(Button);
+		level = gpioRead(Button);
 		if (level == 0)
 		{
             gpioWrite(Buzzer, 1);              // Make Buzzer output HIGH level, turn on
