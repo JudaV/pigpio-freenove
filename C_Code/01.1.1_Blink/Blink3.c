@@ -13,7 +13,7 @@ void intHandler(int dummy)
 
 int main(int argc, char *argv[])
 {
-	int GPIO=17;
+    int GPIO=17;
 	int level;
 
 	if (gpioInitialise() < 0) return 1;
