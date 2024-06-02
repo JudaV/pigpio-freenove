@@ -28,11 +28,11 @@ int main(int argc, char *argv[])
         level = gpioRead(Button);
         if (level == 0)
         {
-            gpioWrite(Led,1);// Make LEd output HIGH level, turn on
+            gpioWrite(Led,1);       // Make LEd output HIGH level, turn on
         }
         else
         {
-            gpioWrite(Led,0);// Make GPIO output LOW level, turn Led off
+            gpioWrite(Led,0);       // Make GPIO output LOW level, turn Led off
         }
     }
     gpioTerminate();
