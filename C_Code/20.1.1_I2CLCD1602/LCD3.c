@@ -15,8 +15,7 @@ Each byte we send has 4 data bits and 4 control bits.
 Sending 4-bit information gets done by sending the most signifant 4bit nibble first.
 So sending information is as follows: 4bit MSB first with E bit high, 4bit MSB E-bit low
 4bit LSB with E-bit high, 4 bit LSB with E-bit low. 
-When sending 8 bit information - bytes through I2C, send the information in the MSB nibble
-of this byte and fill the LSB with 4 zero 's.
+
 Using the data sheet, we can fill in the control-bits
 (e.g. : https://cdn-shop.adafruit.com/datasheets/TC1602A-01T.pdf)
 
