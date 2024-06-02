@@ -6,20 +6,18 @@
 
 static volatile int keepRunning = 1;
 
-void intHandler(int dummy) {
-    keepRunning = 0; 
+void intHandler(int dummy) 
+{
+	keepRunning = 0; 
 }
 
 
 int main(int argc, char *argv[])
 {
-   int GPIO=17;
-   int level;
+	int GPIO=17;
+	int level;
 
-   if (gpioInitialise() < 0) return 1;
-
-   //level = gpioRead(GPIO);
-	
+	if (gpioInitialise() < 0) return 1;
 	gpioSetMode(GPIO, PI_OUTPUT);       // Set GPIO17 as output
 	printf("Using GPIO-pin %d\n",GPIO);	// Output information on terminal
 	signal(SIGINT, intHandler);			// upon ^C the signal function is called to terminate the process;
