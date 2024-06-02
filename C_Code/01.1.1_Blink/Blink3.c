@@ -1,4 +1,3 @@
-
 #include <pigpio.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -8,7 +7,7 @@ static volatile int keepRunning = 1;
 
 void intHandler(int dummy) 
 {
-	keepRunning = 0; 
+    keepRunning = 0; 
 }
 
 
@@ -23,12 +22,13 @@ int main(int argc, char *argv[])
 	signal(SIGINT, intHandler);			// upon ^C the signal function is called to terminate the process;
 										// intHandler will change the variable keepRunning form 1 to 0
 										// now the infinite while loop will end, and main will stop gracefully
-	while(keepRunning){
+	while(keepRunning)
+	{
 		gpioSetMode(GPIO, PI_OUTPUT);   // Set GPIO17 as output
-		gpioWrite(GPIO,1);              // Make GPIO output HIGH level
+		gpioWrite(GPIO,1);				// Make GPIO output HIGH level
 		printf("led turned on\n");		// Output information on terminal
 		sleep(1);						// Wait for 1 second
-		gpioWrite(GPIO,0);              // Make GPIO output LOW level
+		gpioWrite(GPIO,0);				// Make GPIO output LOW level
 		printf("led turned off\n");		// Output information on terminal
 		sleep(5);						// Wait for 5 seconds
 	}
