@@ -20,36 +20,53 @@ of this byte and fill the LSB with 4 zero 's.
 Using the data sheet, we can fill in the control-bits
 (e.g. : https://cdn-shop.adafruit.com/datasheets/TC1602A-01T.pdf)
 
-*/ 
-
+gcc -o LCD3 LCD3.c -lpigpio -lpthread 
+                                       */ 
+                                      
 #include <stdio.h>
 #include <pigpio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
+#include <signal.h>
 
 #define LCD_ADRESS 0x27
 int handle; 
-
+int keepRunning = 1;
 void writeCommand(unsigned char byte);
 void writeData(unsigned char byte);
 void initialise_lcd(void);
+void writeBufferContentToLCD(char *buf, int lenTxt, int line);
 
-// initialisation sequence:
+void printDataTime();
+void writeCPUTempToLCD();
+
+void intHandler(int dummy) ;
+
+unsigned char *buffer = NULL;
+unsigned char *buffer2 = NULL;
+
 
 int main(int argc, char *argv[])
 {   
-    int i = 0;
-    char *string1 = "hallootjesf";
     if (gpioInitialise() < 0) return 1;
     handle = i2cOpen(1, LCD_ADRESS, 0);
     initialise_lcd();
+    printf("control-C to terminate\n");
     
-    writeCommand(0xC2);
-    for(i=0; i<strlen(string1); i++)
-        {
-            writeData(string1[i]);
-        }
-
+    signal(SIGINT, intHandler);
+    // call the function that reads the cpu temp from file 
+    // and outputs it to the LCD
+    writeCPUTempToLCD();
+    while(keepRunning)
+    {
+    // call the function that reads the current time and puts it on the LCD
+    printDataTime();   
+    gpioSleep(PI_TIME_RELATIVE, 1, 0); // wait one second
+    }
+    
+    writeCommand(0x01); // clear leds
+    gpioTerminate();
     return 0;
 }
 
@@ -60,10 +77,10 @@ void writeCommand(unsigned char byte)
     bytesToSend[0] = (byte&0xF0)|0x0C ;       // 4bit MSB first with E bit high, 
                                               // BL   E    RW   RS 
                                               // 1    1    0    0  gives 0xC
-    bytesToSend[1] = (byte&0xF0)|0x08;        // 4bit MSB E-bit low gives 0x8
+    bytesToSend[1] = (byte&0xF0)|0x08;        // 4bit MSB E-bit low gives 0x8:  1 1 0 0 
     bytesToSend[2] = ((byte<<4)&0xF0)|0x0C ;  // 4bit LSB with E-bit high, 
     bytesToSend[3] = ((byte<<4)&0xF0)|0x08 ;  // 4 bit LSB with E-bit low.
-    gpioSleep(PI_TIME_RELATIVE, 0, 5000);
+    gpioSleep(PI_TIME_RELATIVE, 0, 500);
     i2cWriteDevice(handle, bytesToSend, 4);
 }
 
@@ -76,12 +93,12 @@ void writeData(unsigned char byte)
     bytesToSend[1] = (byte&0xF0)|0x09;        // 4bit MSB E-bit low gives 0x9
     bytesToSend[2] = ((byte<<4)&0xF0)|0x0D ;  // 4bit LSB with E-bit high, 
     bytesToSend[3] = ((byte<<4)&0xF0)|0x09 ;  // 4 bit LSB with E-bit low.
-    gpioSleep(PI_TIME_RELATIVE, 0, 5000);
+    gpioSleep(PI_TIME_RELATIVE, 0, 500);
     i2cWriteDevice(handle, bytesToSend, 4);
 }
 
 void initialise_lcd(void) // initialisation sequence:
-{
+{   // the 1602A seems not to need the first 8 lines, uncomment voor 1602
     // gpioSleep(PI_TIME_RELATIVE, 0, 150000);
     // writeCommand(0x30);
     // gpioSleep(PI_TIME_RELATIVE, 0, 5000);
@@ -99,4 +116,66 @@ void initialise_lcd(void) // initialisation sequence:
     gpioSleep(PI_TIME_RELATIVE, 0, 5000);
     writeCommand(0x01);  // clear screen
     gpioSleep(PI_TIME_RELATIVE, 0, 5000);
+}
+
+void writeBufferContentToLCD(char *buf, int lenTxt, int line)
+// line is 1 for upper line, line=2 for lower line
+{
+    if (line!=2)
+    {
+        writeCommand(0x80); // writes to first line, first position of LCD
+    }
+    else if (line == 2)
+    {
+        writeCommand(0xC0);  // writes lower line, first position of LCD
+    }
+
+    if (lenTxt > 16) lenTxt = 16;
+    for (int i = 0; i < lenTxt; i++)
+        {
+            writeData(buf[i]);
+        }
+}
+
+
+void printDataTime(){
+    //Display system time on LCD 
+    unsigned char *buffer2 = malloc(34 * sizeof(char));
+    time_t rawtime;
+    struct tm *timeinfo;
+    int size2 = 0;
+    time(&rawtime);// get system time
+    timeinfo = localtime(&rawtime);//convert to local time
+    
+    size2 = snprintf(buffer2, 16, "Time:%02d:%02d:%02d",timeinfo->tm_hour,timeinfo->tm_min,timeinfo->tm_sec);
+    snprintf(buffer2, 16, "Time:%02d:%02d:%02d",timeinfo->tm_hour,timeinfo->tm_min,timeinfo->tm_sec); 
+    writeBufferContentToLCD(buffer2, size2, 2);
+    free(buffer2);
+    
+}
+
+void writeCPUTempToLCD()
+{
+    unsigned char *buffer = malloc(34 * sizeof(char));
+    
+    FILE *fp;
+    char str_temp[15];
+    float CPU_temp;
+    // CPU temperature data is stored in this directory as a written number e.g. '47760.
+    fp=fopen("/sys/class/thermal/thermal_zone0/temp","r");
+    fgets(str_temp,15,fp);      // read file temp
+    CPU_temp = atof(str_temp)/1000.0;   // convert to Celsius degrees
+    
+    int size = snprintf(buffer, 16,"CPU:%.2fC",CPU_temp); // determine size of string
+    snprintf(buffer,16, "CPU:%.2fC",CPU_temp);// Display CPU temperature on LCD
+    fclose(fp);
+
+    writeBufferContentToLCD(buffer, size, 1);
+    free(buffer);
+}
+
+
+void intHandler(int dummy) 
+{
+    keepRunning = 0; 
 }
