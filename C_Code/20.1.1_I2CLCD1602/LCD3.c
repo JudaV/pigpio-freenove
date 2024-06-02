@@ -145,9 +145,8 @@ void printDataTime(){
     int size2 = 0;
     time(&rawtime);// get system time
     timeinfo = localtime(&rawtime);//convert to local time
-    
+    // print time-info to buffer and determine size of the output
     size2 = snprintf(buffer2, 16, "Time:%02d:%02d:%02d",timeinfo->tm_hour,timeinfo->tm_min,timeinfo->tm_sec);
-    snprintf(buffer2, 16, "Time:%02d:%02d:%02d",timeinfo->tm_hour,timeinfo->tm_min,timeinfo->tm_sec); 
     writeBufferContentToLCD(buffer2, size2, 2);
     free(buffer2);
     
@@ -164,9 +163,8 @@ void writeCPUTempToLCD()
     fp=fopen("/sys/class/thermal/thermal_zone0/temp","r");
     fgets(str_temp,15,fp);      // read file temp
     CPU_temp = atof(str_temp)/1000.0;   // convert to Celsius degrees
-    
-    int size = snprintf(buffer, 16,"CPU:%.2fC",CPU_temp); // determine size of string
-    snprintf(buffer,16, "CPU:%.2fC",CPU_temp);// Display CPU temperature on LCD
+    // determine size of string and display CPU temperature on LCD
+    int size = snprintf(buffer, 16,"CPU:%.2fC",CPU_temp); 
     fclose(fp);
 
     writeBufferContentToLCD(buffer, size, 1);
