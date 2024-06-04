@@ -104,6 +104,7 @@ def setup():
 def loop():
     get_cpu_temp()
     command_to_lcd(0xC0) # start writing on the second line of the LCD
+    time.sleep(0.005)
     get_time_now()
     write_strings_input()
     
