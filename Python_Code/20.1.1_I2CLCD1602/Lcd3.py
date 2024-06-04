@@ -82,6 +82,7 @@ def write_strings_input():
     time.sleep(0.005)
     string_to_lcd(string1)
     command_to_lcd(0xC0)
+    time.sleep(0.005)
     string_to_lcd(string2)
 
 
