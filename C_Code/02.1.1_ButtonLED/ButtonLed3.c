@@ -6,7 +6,7 @@ static volatile int keepRunning = 1;
 
 void intHandler(int dummy) 
 {
-keepRunning = 0; 
+    keepRunning = 0; 
 }
 
 int main(int argc, char *argv[])
