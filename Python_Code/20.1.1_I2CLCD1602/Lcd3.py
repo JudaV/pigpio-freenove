@@ -16,7 +16,7 @@ Sending 4-bit information gets done by sending the most signifant 4bit nibble fi
 So sending information is as follows: 
     4bit MSB first with E bit high, (the e-bit works a bit like a clock-pin)
     4bit MSB E-bit low
-    4bit LSB with E-bit high, 
+    4bit LSB with E-bit high, (we get the LSB by left-shift 4 places)
     4 bit LSB with E-bit low. 
 
 Using the data sheet, we can fill in the control-bits
@@ -24,11 +24,13 @@ Using the data sheet, we can fill in the control-bits
 
 import pigpio
 import time
+from datetime import datetime
 
-pi = pigpio.pi() # Connect to local Pi.
+pi = pigpio.pi() # Connect to local Pi.  (instantiate pigpio instance)
 # set I2C-adress
 ADRESS = 0x27
 handle = pi.i2c_open(1, ADRESS, 0)
+
 
 def command_to_lcd(bit_sequence):
     bytes_to_send = bytearray(4)
@@ -41,6 +43,7 @@ def command_to_lcd(bit_sequence):
     time.sleep(0.0001)
     pi.i2c_write_device(handle, bytes_to_send)
 
+
 def data_to_lcd(bit_sequence):
     bytes_to_send = bytearray(4)
     bytes_to_send[0] = (bit_sequence&0xF0)|0x0D         # 4bit MSB first with E bit high, 
@@ -51,6 +54,7 @@ def data_to_lcd(bit_sequence):
     bytes_to_send[3] = ((bit_sequence<<4)&0xF0)|0x09    # 4 bit LSB with E-bit low.
     time.sleep(0.0001)
     pi.i2c_write_device(handle, bytes_to_send)
+
 
 def init():
     command_to_lcd(0x20)   # set to 4-bits
@@ -65,23 +69,51 @@ def init():
     time.sleep(0.005)
 
 
+def string_to_lcd(string):
+    for i in string:
+        data_to_lcd(ord(i))
+    time.sleep(0.005)
+
+
+def write_strings_input():
+    string1 = input("text for upper line: ")
+    string2 = input("text for lower line: ")
+    command_to_lcd(0x01)
+    time.sleep(0.005)
+    string_to_lcd(string1)
+    command_to_lcd(0xC0)
+    string_to_lcd(string2)
+
+
+def get_cpu_temp():     # get CPU temperature from file "/sys/class/thermal/thermal_zone0/temp"
+    tmp = open('/sys/class/thermal/thermal_zone0/temp')
+    cpu = tmp.read()
+    tmp.close()
+    string_to_lcd('{:.2f}'.format( float(cpu)/1000 ) + ' C')
+ 
+
+def get_time_now():     # get system time
+    string_to_lcd(datetime.now().strftime('    %H:%M:%S'))
+
 
 def setup():
     init()
 
+
 def loop():
-    for i in "hallootjes":
-        data_to_lcd(ord(i))
-    command_to_lcd(0xC0)
-    for i in "hallootjes":
-        data_to_lcd(ord(i))
+    get_cpu_temp()
+    command_to_lcd(0xC0) # start writing on the second line of the LCD
+    get_time_now()
+    write_strings_input()
+    
 
 def destroy():
     pi.i2c_close(handle)
     pi.stop()
     print("bye")
 
-if __name__ == "__main__":  # Program entrance
+
+if __name__ == "__main__":
     print("Program is starting...")
     setup()
     try:

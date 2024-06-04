@@ -19,24 +19,20 @@ So sending information is as follows: 4bit MSB first with E bit high, 4bit MSB E
 Using the data sheet, we can fill in the control-bits
 (e.g. : https://cdn-shop.adafruit.com/datasheets/TC1602A-01T.pdf)
 
-gcc -o LCD3 LCD3.c -lpigpio -lpthread 
+gcc -o probeer probeer.c -lpigpio -lpthread -I.
                                        */ 
                                       
 #include <stdio.h>
-#include <pigpio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
 #include <signal.h>
+#include <LCD.h>
 
 
 #define LCD_ADRESS 0x27
 int handle; 
 int keepRunning = 1;
-void writeCommand(unsigned char byte);
-void writeData(unsigned char byte);
-void initialise_lcd(void);
-void writeBufferContentToLCD(char *buf, int lenTxt, int line);
 
 void printDataTime();
 void writeCPUTempToLCD();
@@ -68,73 +64,6 @@ int main(int argc, char *argv[])
     writeCommand(0x01); // clear leds
     gpioTerminate();
     return 0;
-}
-
-void writeCommand(unsigned char byte)
-// send 4 bytes to transmit one byte..
-{
-    unsigned char bytesToSend[4];
-    bytesToSend[0] = (byte&0xF0)|0x0C ;       // 4bit MSB first with E bit high, 
-                                              // BL   E    RW   RS 
-                                              // 1    1    0    0  gives 0xC
-    bytesToSend[1] = (byte&0xF0)|0x08;        // 4bit MSB E-bit low gives 0x8:  1 1 0 0 
-    bytesToSend[2] = ((byte<<4)&0xF0)|0x0C ;  // 4bit LSB with E-bit high, 
-    bytesToSend[3] = ((byte<<4)&0xF0)|0x08 ;  // 4 bit LSB with E-bit low.
-    gpioSleep(PI_TIME_RELATIVE, 0, 500);
-    i2cWriteDevice(handle, bytesToSend, 4);
-}
-
-void writeData(unsigned char byte)
-{
-    unsigned char bytesToSend[4];
-    bytesToSend[0] = (byte&0xF0)|0x0D ;       // 4bit MSB first with E bit high, 
-                                              // BL   E    RW   RS 
-                                              // 1    1    1    0  gives 0xD
-    bytesToSend[1] = (byte&0xF0)|0x09;        // 4bit MSB E-bit low gives 0x9
-    bytesToSend[2] = ((byte<<4)&0xF0)|0x0D ;  // 4bit LSB with E-bit high, 
-    bytesToSend[3] = ((byte<<4)&0xF0)|0x09 ;  // 4 bit LSB with E-bit low.
-    gpioSleep(PI_TIME_RELATIVE, 0, 500);
-    i2cWriteDevice(handle, bytesToSend, 4);
-}
-
-void initialise_lcd(void) // initialisation sequence:
-{   // the 1602A seems not to need the first 8 lines, uncomment voor 1602
-    // gpioSleep(PI_TIME_RELATIVE, 0, 150000);
-    // writeCommand(0x30);
-    // gpioSleep(PI_TIME_RELATIVE, 0, 5000);
-    // writeCommand(0x30);
-    // gpioSleep(PI_TIME_RELATIVE, 0, 110000);
-    // writeCommand(0x30);  // function set
-    // gpioSleep(PI_TIME_RELATIVE, 0, 10000);
-    writeCommand(0x20);  // set to 4-bits
-    gpioSleep(PI_TIME_RELATIVE, 0, 5000);
-    writeCommand(0x20);
-    gpioSleep(PI_TIME_RELATIVE, 0, 5000);
-    writeCommand(0x28);  // 4 bit , 2 lines, and 5x8bit fonts 
-    gpioSleep(PI_TIME_RELATIVE, 0, 5000);
-    writeCommand(0x0C);   // cursor off
-    gpioSleep(PI_TIME_RELATIVE, 0, 5000);
-    writeCommand(0x01);  // clear screen
-    gpioSleep(PI_TIME_RELATIVE, 0, 5000);
-}
-
-void writeBufferContentToLCD(char *buf, int lenTxt, int line)
-// line is 1 for upper line, line=2 for lower line
-{
-    if (line!=2)
-    {
-        writeCommand(0x80); // writes to first line, first position of LCD
-    }
-    else if (line == 2)
-    {
-        writeCommand(0xC0);  // writes lower line, first position of LCD
-    }
-
-    if (lenTxt > 16) lenTxt = 16;
-    for (int i = 0; i < lenTxt; i++)
-        {
-            writeData(buf[i]);
-        }
 }
 
 

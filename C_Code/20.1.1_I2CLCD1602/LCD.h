@@ -17,63 +17,16 @@ So sending information is as follows: 4bit MSB first with E bit high, 4bit MSB E
 4bit LSB with E-bit high, 4 bit LSB with E-bit low. 
 
 Using the data sheet, we can fill in the control-bits
-(e.g. : https://cdn-shop.adafruit.com/datasheets/TC1602A-01T.pdf)
+(e.g. : https://cdn-shop.adafruit.com/datasheets/TC1602A-01T.pdf) */
 
-gcc -o LCD3 LCD3.c -lpigpio -lpthread 
-                                       */ 
-                                      
-#include <stdio.h>
+
+
 #include <pigpio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <time.h>
-#include <signal.h>
-
-
-#define LCD_ADRESS 0x27
-int handle; 
-int keepRunning = 1;
-void writeCommand(unsigned char byte);
-void writeData(unsigned char byte);
-void initialise_lcd(void);
-void writeBufferContentToLCD(char *buf, int lenTxt, int line);
-
-void printDataTime();
-void writeCPUTempToLCD();
-
-void intHandler(int dummy) ;
-
-unsigned char *buffer = NULL;
-unsigned char *buffer2 = NULL;
-
-
-int main(int argc, char *argv[])
-{   
-    if (gpioInitialise() < 0) return 1;
-    handle = i2cOpen(1, LCD_ADRESS, 0);
-    initialise_lcd();
-    printf("control-C to terminate\n");
-    
-    signal(SIGINT, intHandler);
-    // call the function that reads the cpu temp from file 
-    // and outputs it to the LCD
-    writeCPUTempToLCD();
-    while(keepRunning)
-    {
-    // call the function that reads the current time and puts it on the LCD
-    printDataTime();   
-    gpioSleep(PI_TIME_RELATIVE, 1, 0); // wait one second
-    }
-    
-    writeCommand(0x01); // clear leds
-    gpioTerminate();
-    return 0;
-}
-
-void writeCommand(unsigned char byte)
+int handle;
+void writeCommand(char byte)
 // send 4 bytes to transmit one byte..
-{
-    unsigned char bytesToSend[4];
+{   
+    char bytesToSend[4];
     bytesToSend[0] = (byte&0xF0)|0x0C ;       // 4bit MSB first with E bit high, 
                                               // BL   E    RW   RS 
                                               // 1    1    0    0  gives 0xC
@@ -84,9 +37,9 @@ void writeCommand(unsigned char byte)
     i2cWriteDevice(handle, bytesToSend, 4);
 }
 
-void writeData(unsigned char byte)
+void writeData(char byte)
 {
-    unsigned char bytesToSend[4];
+    char bytesToSend[4];
     bytesToSend[0] = (byte&0xF0)|0x0D ;       // 4bit MSB first with E bit high, 
                                               // BL   E    RW   RS 
                                               // 1    1    1    0  gives 0xD
@@ -135,45 +88,4 @@ void writeBufferContentToLCD(char *buf, int lenTxt, int line)
         {
             writeData(buf[i]);
         }
-}
-
-
-void printDataTime(){
-    //Display system time on LCD 
-    unsigned char *buffer2 = malloc(34 * sizeof(char));
-    time_t rawtime;
-    struct tm *timeinfo;
-    int size2 = 0;
-    time(&rawtime);// get system time
-    timeinfo = localtime(&rawtime);//convert to local time
-    // print time-info to buffer and determine size of the output
-    size2 = snprintf(buffer2, 16, "Time:%02d:%02d:%02d",timeinfo->tm_hour,timeinfo->tm_min,timeinfo->tm_sec);
-    writeBufferContentToLCD(buffer2, size2, 2);
-    free(buffer2);
-    
-}
-
-void writeCPUTempToLCD()
-{
-    unsigned char *buffer = malloc(34 * sizeof(char));
-    
-    FILE *fp;
-    char str_temp[15];
-    float CPU_temp;
-    // CPU temperature data is stored in this directory as a written number e.g. '47760.
-    fp=fopen("/sys/class/thermal/thermal_zone0/temp","r");
-    fgets(str_temp,15,fp);      // read file temp
-    CPU_temp = atof(str_temp)/1000.0;   // convert to Celsius degrees
-    // determine size of string and display CPU temperature on LCD
-    int size = snprintf(buffer, 16,"CPU:%.2fC",CPU_temp); 
-    fclose(fp);
-
-    writeBufferContentToLCD(buffer, size, 1);
-    free(buffer);
-}
-
-
-void intHandler(int dummy) 
-{
-    keepRunning = 0; 
 }

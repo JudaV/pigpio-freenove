@@ -186,7 +186,6 @@ class lcd:
 
 if __name__ == "__main__":
 
-   import i2c_lcd
    import pigpio
    import time
 
@@ -194,7 +193,7 @@ if __name__ == "__main__":
    if not pi.connected:
       exit(0)
 
-   lcd = i2c_lcd.lcd(pi, width=20)
+   lcd = lcd(pi, width=20)
 
    count = 1
 
