@@ -89,8 +89,8 @@ void writeData(unsigned char byte)
     unsigned char bytesToSend[4];
     bytesToSend[0] = (byte&0xF0)|0x0D ;       // 4bit MSB first with E bit high, 
                                               // BL   E    RW   RS 
-                                              // 1    1    1    0  gives 0xD
-    bytesToSend[1] = (byte&0xF0)|0x09;        // 4bit MSB E-bit low gives 0x9
+                                              // 1    1    0    1  gives 0xD
+    bytesToSend[1] = (byte&0xF0)|0x09;        // 4bit MSB E-bit low gives 0x9 : 1 0 0 1
     bytesToSend[2] = ((byte<<4)&0xF0)|0x0D ;  // 4bit LSB with E-bit high, 
     bytesToSend[3] = ((byte<<4)&0xF0)|0x09 ;  // 4 bit LSB with E-bit low.
     gpioSleep(PI_TIME_RELATIVE, 0, 500);

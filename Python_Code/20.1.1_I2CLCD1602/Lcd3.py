@@ -12,9 +12,9 @@ connected.
 That's why it is called 4-bit. The control-bits BL E RW RS must always be set / send.
 Each byte we send has 4 data bits and 4 control bits.
 
-Sending 4-bit information gets done by sending the most signifant 4bit nibble first.
+Sending 4-bit information gets done by sending the Most Signifant Bit - 4bit nibble first.
 So sending information is as follows: 
-    4bit MSB first with E bit high, (the e-bit works a bit like a clock-pin)
+    4bit MSB first with E bit high,
     4bit MSB E-bit low
     4bit LSB with E-bit high, (we get the LSB by left-shift 4 places)
     4 bit LSB with E-bit low. 
@@ -37,7 +37,7 @@ def command_to_lcd(bit_sequence):
     bytes_to_send[0] = (bit_sequence&0xF0)|0x0C         # 4bit MSB first with E bit high, 
                                                          # BL   E    RW   RS 
                                                          # 1    1    0    0  gives 0xC
-    bytes_to_send[1] = (bit_sequence&0xF0)|0x08         # 4bit MSB E-bit low gives 0x8:  1 1 0 0 
+    bytes_to_send[1] = (bit_sequence&0xF0)|0x08         # 4bit MSB E-bit low gives 0x8:  1 0 0 0 
     bytes_to_send[2] = ((bit_sequence<<4)&0xF0)|0x0C    # 4bit LSB with E-bit high, 
     bytes_to_send[3] = ((bit_sequence<<4)&0xF0)|0x08    # 4bit LSB with E-bit low.
     time.sleep(0.0001)
@@ -47,9 +47,9 @@ def command_to_lcd(bit_sequence):
 def data_to_lcd(bit_sequence):
     bytes_to_send = bytearray(4)
     bytes_to_send[0] = (bit_sequence&0xF0)|0x0D         # 4bit MSB first with E bit high, 
-                                                         # BL   E    RW   RS 
-                                                         # 1    1    1    0  gives 0xD
-    bytes_to_send[1] = (bit_sequence&0xF0)|0x09         # 4bit MSB E-bit low gives 0x9
+                                                        # BL   E    RW   RS 
+                                                        # 1    1    0    1  gives 0xD
+    bytes_to_send[1] = (bit_sequence&0xF0)|0x09         # 4bit MSB E-bit low gives 0x9: 1 0 0 1
     bytes_to_send[2] = ((bit_sequence<<4)&0xF0)|0x0D    # 4bit LSB with E-bit high, 
     bytes_to_send[3] = ((bit_sequence<<4)&0xF0)|0x09    # 4 bit LSB with E-bit low.
     time.sleep(0.0001)
@@ -78,10 +78,10 @@ def string_to_lcd(string):
 def write_strings_input():
     string1 = input("text for upper line: ")
     string2 = input("text for lower line: ")
-    command_to_lcd(0x01)
+    command_to_lcd(0x01) #clear
     time.sleep(0.005)
     string_to_lcd(string1)
-    command_to_lcd(0xC0)
+    command_to_lcd(0xC0) # second line
     time.sleep(0.005)
     string_to_lcd(string2)
 
