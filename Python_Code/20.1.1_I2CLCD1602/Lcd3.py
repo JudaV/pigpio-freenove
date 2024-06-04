@@ -30,33 +30,51 @@ pi = pigpio.pi() # Connect to local Pi.
 ADRESS = 0x27
 handle = pi.i2c_open(1, ADRESS, 0)
 
-def command_to_lcd(byte_sequence):
-    bytes_to_send = bytearray()
-    bytes_to_send[0] = (byte_sequence&0xF0)|0x0C ;       # 4bit MSB first with E bit high, 
+def command_to_lcd(bit_sequence):
+    bytes_to_send = bytearray(4)
+    bytes_to_send[0] = (bit_sequence&0xF0)|0x0C         # 4bit MSB first with E bit high, 
                                                          # BL   E    RW   RS 
                                                          # 1    1    0    0  gives 0xC
-    bytes_to_send[1] = (byte_sequence&0xF0)|0x08;        # 4bit MSB E-bit low gives 0x8:  1 1 0 0 
-    bytes_to_send[2] = ((byte_sequence<<4)&0xF0)|0x0C ;  # 4bit LSB with E-bit high, 
-    bytes_to_send[3] = ((byte_sequence<<4)&0xF0)|0x08 ;  # 4bit LSB with E-bit low.
+    bytes_to_send[1] = (bit_sequence&0xF0)|0x08         # 4bit MSB E-bit low gives 0x8:  1 1 0 0 
+    bytes_to_send[2] = ((bit_sequence<<4)&0xF0)|0x0C    # 4bit LSB with E-bit high, 
+    bytes_to_send[3] = ((bit_sequence<<4)&0xF0)|0x08    # 4bit LSB with E-bit low.
     time.sleep(0.0001)
     pi.i2c_write_device(handle, bytes_to_send)
 
-def data_to_lcd(byte_sequence):
-    bytes_to_send = bytearray()
-    bytes_to_send[0] = (byte_sequence&0xF0)|0x0D ;       # 4bit MSB first with E bit high, 
+def data_to_lcd(bit_sequence):
+    bytes_to_send = bytearray(4)
+    bytes_to_send[0] = (bit_sequence&0xF0)|0x0D         # 4bit MSB first with E bit high, 
                                                          # BL   E    RW   RS 
                                                          # 1    1    1    0  gives 0xD
-    bytes_to_send[1] = (byte_sequence&0xF0)|0x09;        # 4bit MSB E-bit low gives 0x9
-    bytes_to_send[2] = ((byte_sequence<<4)&0xF0)|0x0D ;  # 4bit LSB with E-bit high, 
-    bytes_to_send[3] = ((byte_sequence<<4)&0xF0)|0x09 ;  # 4 bit LSB with E-bit low.
+    bytes_to_send[1] = (bit_sequence&0xF0)|0x09         # 4bit MSB E-bit low gives 0x9
+    bytes_to_send[2] = ((bit_sequence<<4)&0xF0)|0x0D    # 4bit LSB with E-bit high, 
+    bytes_to_send[3] = ((bit_sequence<<4)&0xF0)|0x09    # 4 bit LSB with E-bit low.
     time.sleep(0.0001)
     pi.i2c_write_device(handle, bytes_to_send)
+
+def init():
+    command_to_lcd(0x20)   # set to 4-bits
+    time.sleep(0.005)
+    command_to_lcd(0x20)
+    time.sleep(0.005)
+    command_to_lcd(0x28)   # 4 bit , 2 lines, and 5x8bit fonts 
+    time.sleep(0.005)
+    command_to_lcd(0x0C)   # cursor off
+    time.sleep(0.005)
+    command_to_lcd(0x01);  # clear screen
+    time.sleep(0.005)
+
 
 
 def setup():
-    ...
+    init()
+
 def loop():
-    ...
+    for i in "hallootjes":
+        data_to_lcd(ord(i))
+    command_to_lcd(0xC0)
+    for i in "hallootjes":
+        data_to_lcd(ord(i))
 
 def destroy():
     pi.i2c_close(handle)
