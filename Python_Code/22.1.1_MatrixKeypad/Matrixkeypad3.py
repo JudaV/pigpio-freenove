@@ -19,7 +19,22 @@ def setup():
     for pin in col_pins:
         pi.set_mode(pin, pigpio.OUTPUT)
 
-
+def record_keyboard_input():
+    output = None
+    for column in col_pins:
+        pi.write(column,1)
+    for col_index, col in enumerate(col_pins):
+        pi.write(column,0)   # one col is low now, and ready to be read
+        time.sleep(0.05)
+        # now check the rows one by one in this column:
+        for keypad_row_index, keypad_row in enumerate(row_pins):
+            if pi.read(keypad_row) == 0:
+                time.sleep(0.2)
+                output = keypad[keypad_row_index][col_index]
+                print(f' you pressed {output}')
+        pi.write(col,1)
+    if output:
+        return output
 
 
 def loop():
@@ -27,15 +42,7 @@ def loop():
     # then measure rows
     # then set cols high again
     while True:
-        for count_col, col in enumerate(col_pins):
-            pi.write(col,0)   # one col is low now, and ready to be read
-            time.sleep(0.05)
-            for count_row, row in enumerate(row_pins):
-                if pi.read(row) == 0:
-                    time.sleep(0.1)
-                    print(f'{keypad[count_row][count_col]}')
-                    
-            pi.write(col,1)
+        record_keyboard_input()
 
 
 def destroy():
