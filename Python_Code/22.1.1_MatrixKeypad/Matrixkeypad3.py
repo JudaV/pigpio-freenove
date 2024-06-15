@@ -21,28 +21,30 @@ def setup():
 
 def record_keyboard_input():
     output = None
-    for column in col_pins:
-        pi.write(column,1)
-    for col_index, col in enumerate(col_pins):
+    # set colums one by one low, 
+    # then measure rows
+    # then set cols high again
+    for column_index, column in enumerate(col_pins):
         pi.write(column,0)   # one col is low now, and ready to be read
         time.sleep(0.05)
         # now check the rows one by one in this column:
         for keypad_row_index, keypad_row in enumerate(row_pins):
             if pi.read(keypad_row) == 0:
-                time.sleep(0.2)
-                output = keypad[keypad_row_index][col_index]
+                # read the keypad list to get the correct character
+                output = keypad[keypad_row_index][column_index]
                 print(f' you pressed {output}')
-        pi.write(col,1)
-    if output:
-        return output
+                # time.sleep(0.1)
+        pi.write(column,1)
+    return output
 
 
 def loop():
-    # set colums one by one low, 
-    # then measure rows
-    # then set cols high again
     while True:
-        record_keyboard_input()
+        b = record_keyboard_input()
+        time.sleep(0.1)
+        if not b is None:
+            print(f'hello {b}' *2)
+            time.sleep(0.1)
 
 
 def destroy():
