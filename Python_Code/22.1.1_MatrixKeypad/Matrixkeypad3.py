@@ -43,7 +43,7 @@ def loop():
         b = record_keyboard_input()
         time.sleep(0.1)
         if not b is None:
-            print(f'hello {b}' *2)
+            print(f'hello {b} ' * 2)
             time.sleep(0.1)
 
 
