@@ -89,10 +89,12 @@ class LCD(pi):
             self.command_to_lcd(0x01)  # clear
             time.sleep(0.005)
             self.string_to_lcd(string)  # write string to first line
+            time.sleep(0.005)
         else:
             self.command_to_lcd(0xC0)  # start at second line
             time.sleep(0.005)
             self.string_to_lcd(string)  # write string to second line
+            time.sleep(0.005)
 
     def clear(self):
         self.command_to_lcd(0x01)
@@ -137,48 +139,66 @@ pi = pigpio.pi()
 pi = pigpio.pi()
 ADRESS = 0x27
 handle = pi.i2c_open(1, ADRESS, 0)
+list_of_chars = []
+new_sum = 0
+num1 = 0
+operator = " "
+sum = 0
+
 
 # initialize screen and matrix keyboard:
 lcd = LCD(pi)
 kp = MatrixKeypad(pi)
 
 def loop():
-    lcd.write(1,"Add,B-,Clr,Deel")
-    lcd.command_to_lcd(0x14)  # cursor shift to the right
-    time.sleep(0.0005)
-    lcd.command_to_lcd(0xC0)  # second line
-    time.sleep(0.0005)
-    
+    global sum
     while True:
         b = kp.record_char()
         time.sleep(0.1)
+        
         if b:   # if b is not None:
             print(f'{b} pressed ')
             time.sleep(0.02)
-            lcd.data_to_lcd(ord(b))
             char_to_math(b)
+            lcd.write(1, f'{str(num1)}{operator}')
+           
+            sum = calc(sum, operator, num1)
+            lcd.write(2, str(sum))
 
 
 def char_to_math(char):
-    list_of_chars = []
-    if char != "#":
+    global list_of_chars
+    global sum
+    global num1
+    global operator
+
+    if char in '0123456789':
+        operator = ' '
         list_of_chars.append(char)
         print(list_of_chars)
-    
-    
-
-
-def calc(num1, operator, num2):
-    if operator == "A":
-        return int(num1) + int(num2)
-    elif operator == "B":
-        return int(num1) - int(num2)
-    elif operator == "D":
-        return float(int(num1) / int(num2))
-    elif operator == "*":
-        return int(num1) * int(num2)
+        if list_of_chars:
+            num1 =  int(''.join([str(item) for item in list_of_chars]))
+        print("num is " , num1)
     else:
-        return "missing operator"
+        # join the character list into string and turn it to int
+        operator = char
+        print('operator is ', operator)
+        list_of_chars = []
+    
+    return (num1, operator)
+
+
+def calc(sum, operator, num1):
+    if operator == "A":
+        return int(sum) + int(num1)
+    elif operator == "B":
+        return int(sum) - int(num1)
+    elif operator == "D":
+        return float(int(sum) / int(num1))
+    elif operator == "*":
+        return int(sum) * int(num1)
+    else:
+        return sum
 
 def destroy():
     pi.i2c_close(handle)
