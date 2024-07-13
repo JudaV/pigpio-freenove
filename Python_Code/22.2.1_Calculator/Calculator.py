@@ -2,10 +2,10 @@
 # matrix keypad is connected in the same way as in the other files
 # in this directory
 
-# The LCD keaypad is conned to 5V, ground SDA2 en SCL is in 
+# The LCD keypad is connected to 5V, ground SDA2 and  SCL just as in 
 # chapter 20. 
 
-# inputs from the matrixkeypad are processed to the LCD1602A
+# inputs from the matrix keypad are processed to the LCD1602A
 
 import pigpio
 import time
@@ -15,7 +15,12 @@ from pigpio import pi
 row_pins = [18, 23, 24, 25] # BCM numbering - anodes 
 col_pins = [10, 22, 27, 17] # cathodes
 
-keypad = [['1', '2', '3', 'A'], ['4', '5', '6', 'B'], ['7', '8', '9', 'C'], ['*', '0', '#', 'D']]
+# This is how it looks:
+# keypad = [['1', '2', '3', 'A'], ['4', '5', '6', 'B'], ['7', '8', '9', 'C'], ['*', '0', '#', 'D']]
+
+# This how we use it now: 
+# A becomes plus; B becomes minus; C becomes clear; D becomes division;  TODO #
+keypad = [['1', '2', '3', '+'], ['4', '5', '6', '-'], ['7', '8', '9', 'C'], ['*', '0', '#', '/']]
 
 
 class LCD(pi):
@@ -139,19 +144,16 @@ pi = pigpio.pi()
 pi = pigpio.pi()
 ADRESS = 0x27
 handle = pi.i2c_open(1, ADRESS, 0)
-list_of_chars = []
-new_sum = 0
-num1 = 0
-operator = " "
-sum = 0
-
 
 # initialize screen and matrix keyboard:
 lcd = LCD(pi)
 kp = MatrixKeypad(pi)
 
 def loop():
-    global sum
+    sum = 0
+    list_of_chars = []
+    num1 = 0
+    operator = ''
     while True:
         b = kp.record_char()
         time.sleep(0.1)
@@ -159,46 +161,45 @@ def loop():
         if b:   # if b is not None:
             print(f'{b} pressed ')
             time.sleep(0.02)
-            char_to_math(b)
-            lcd.write(1, f'{str(num1)}{operator}')
+            num1, operator, list_of_chars = char_to_math_variables(b, list_of_chars, num1, operator)
+            lcd.write(1, f'{str(sum)} {operator} {str(num1)} ')
            
-            sum = calc(sum, operator, num1)
+            new_sum = calc(sum, operator, num1)
+            sum = new_sum
+            print("sum is now: ", sum)
             lcd.write(2, str(sum))
+            
 
-
-def char_to_math(char):
-    global list_of_chars
-    global sum
-    global num1
-    global operator
-
-    if char in '0123456789':
-        operator = ' '
-        list_of_chars.append(char)
-        print(list_of_chars)
+def char_to_math_variables(b, list_of_chars, num1, operator):
+    if b in '0123456789':
+        list_of_chars.append(b)
         if list_of_chars:
             num1 =  int(''.join([str(item) for item in list_of_chars]))
-        print("num is " , num1)
     else:
-        # join the character list into string and turn it to int
-        operator = char
-        print('operator is ', operator)
+        operator = b
         list_of_chars = []
-    
-    return (num1, operator)
+    return num1, operator, list_of_chars
 
 
 def calc(sum, operator, num1):
-    if operator == "A":
+    if operator == "+":
+        print("sum, oper, num1 : ", sum, operator, num1)
+        print("return is: ", (int(sum) + int(num1)) )
         return int(sum) + int(num1)
-    elif operator == "B":
+    elif operator == "-":
         return int(sum) - int(num1)
-    elif operator == "D":
+    elif operator == "/":
         return float(int(sum) / int(num1))
     elif operator == "*":
         return int(sum) * int(num1)
+    elif operator == 'C':
+        clear()
     else:
-        return sum
+        return int(sum)
+
+def clear():
+    lcd.clear()
+    loop()
 
 def destroy():
     pi.i2c_close(handle)
