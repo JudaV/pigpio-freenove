@@ -150,9 +150,9 @@ lcd = LCD(pi)
 kp = MatrixKeypad(pi)
 
 def loop():
-    sum = 0
-    list_of_chars = []
     num1 = 0
+    num2 = 0
+    list_of_chars = []
     operator = ''
     while True:
         b = kp.record_char()
@@ -161,41 +161,48 @@ def loop():
         if b:   # if b is not None:
             print(f'{b} pressed ')
             time.sleep(0.02)
-            num1, operator, list_of_chars = char_to_math_variables(b, list_of_chars, num1, operator)
-            lcd.write(1, f'{str(sum)} {operator} {str(num1)} ')
+            num1, num2, operator, list_of_chars = char_to_math_variables(b, list_of_chars, num1, num2, operator)
+            lcd.write(1, f'{str(num1)} {operator} {str(num2)}')
            
-            new_sum = calc(sum, operator, num1)
-            sum = new_sum
+            sum = calc(num1, operator, num2)
             print("sum is now: ", sum)
             lcd.write(2, str(sum))
-            
+            num1 = sum
 
-def char_to_math_variables(b, list_of_chars, num1, operator):
+
+def char_to_math_variables(b, list_of_chars, num1, num2, operator):
+    num = 0
     if b in '0123456789':
         list_of_chars.append(b)
         if list_of_chars:
-            num1 =  int(''.join([str(item) for item in list_of_chars]))
+            num =  int(''.join([str(item) for item in list_of_chars]))
     else:
         operator = b
         list_of_chars = []
-    return num1, operator, list_of_chars
+    
+    if operator:
+        num2 = num
+    else:
+        num1 = num
+
+    return num1, num2, operator, list_of_chars
 
 
-def calc(sum, operator, num1):
+def calc(num1, operator, num2):
     if operator == "+":
-        print("sum, oper, num1 : ", sum, operator, num1)
-        print("return is: ", (int(sum) + int(num1)) )
-        return int(sum) + int(num1)
+        print("num1, oper, num2 : ", num1, operator, num2)
+        print("return is: ", (int(num1) + int(num2)) )
+        return int(num1) + int(num2)
     elif operator == "-":
-        return int(sum) - int(num1)
+        return int(num1) - int(num2)
     elif operator == "/":
-        return float(int(sum) / int(num1))
+        return float(int(num1) / int(num2))
     elif operator == "*":
-        return int(sum) * int(num1)
+        return int(num1) * int(num2)
     elif operator == 'C':
         clear()
     else:
-        return int(sum)
+        return int(num1)
 
 def clear():
     lcd.clear()
