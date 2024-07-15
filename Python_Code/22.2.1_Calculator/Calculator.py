@@ -20,7 +20,7 @@ col_pins = [10, 22, 27, 17] # cathodes
 
 # This how we use it now: 
 # A becomes plus; B becomes minus; C becomes clear; D becomes division;  TODO #
-keypad = [['1', '2', '3', '+'], ['4', '5', '6', '-'], ['7', '8', '9', 'C'], ['*', '0', '#', '/']]
+keypad = [['1', '2', '3', '+'], ['4', '5', '6', '-'], ['7', '8', '9', 'C'], ['*', '0', '.', '/']]
 
 
 class LCD(pi):
@@ -169,18 +169,24 @@ def loop():
                 lcd.write(1, f'{str(num1)} {operator}')
             else:
                 lcd.write(1, f'{str(num1)} {operator} {str(num2)}')
-            temp_sum = calc(num1, operator, num2)
+            temp_sum = check_floats(calc(num1, operator, num2))
             lcd.write(2, str(temp_sum))
             
             
 def char_to_math_variables(b, list_of_chars, num1, num2, operator):
-    if b.isdigit():
+    if b in "01234567890.":
         list_of_chars.append(b)
         if list_of_chars:
             if operator:
-                num2 = int(''.join([str(item) for item in list_of_chars]))
+                if '.' in list_of_chars:
+                    num2 = float(''.join([str(item) for item in list_of_chars]))
+                else:
+                    num2 = int(''.join([str(item) for item in list_of_chars]))
             else:
-                num1 = int(''.join([str(item) for item in list_of_chars]))
+                if '.' in list_of_chars:
+                    num1 = float(''.join([str(item) for item in list_of_chars]))
+                else:
+                    num1 = int(''.join([str(item) for item in list_of_chars]))
     else:
         operator = b
         list_of_chars = []
@@ -192,10 +198,12 @@ def char_to_math_variables(b, list_of_chars, num1, num2, operator):
 
 
 def calc(num1, operator, num2):
+    num1 = check_floats(num1)
+    num2 = check_floats(num2)
     if operator == "+":
-        return int(num1) + int(num2)
+        return num1 + num2
     elif operator == "-":
-        return int(num1) - int(num2)
+        return num1 - num2
     elif operator == "/":
         try:
             if (float(int(num1) / int(num2))).is_integer():
@@ -206,13 +214,18 @@ def calc(num1, operator, num2):
             lcd.write(2, "Zero Division Error")
             time.sleep(2)
             clear()
-        
     elif operator == "*":
-        return int(num1) * int(num2)
+        return num1 * num2
     elif operator == 'C':
         clear()
-    else: # TODO that leaves # to be done
-        return int(num1)
+    else: # when operator is ''
+        return num1
+    
+def check_floats(s):
+    if float(s).is_integer():
+        return int(s)
+    else:
+        return float(s)
 
 def clear():
     lcd.clear()
