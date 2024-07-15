@@ -1,5 +1,5 @@
-# this code uses the the LCD 1602A LCD and the matrix keypad.
-# matrix keypad is connected in the same way as in the other files
+# This code uses the the LCD 1602A LCD and the 4x4 matrix keypad.
+# The matrix keypad is connected in the same way as in the other files
 # in this directory
 
 # The LCD keypad is connected to 5V, ground SDA2 and  SCL just as in 
@@ -150,58 +150,68 @@ lcd = LCD(pi)
 kp = MatrixKeypad(pi)
 
 def loop():
+    temp_sum = 0
     num1 = 0
     num2 = 0
-    list_of_chars = []
     operator = ''
+    list_of_chars = []
     while True:
         b = kp.record_char()
-        time.sleep(0.1)
-        
+        time.sleep(0.1)    
         if b:   # if b is not None:
-            print(f'{b} pressed ')
+            print(f'{b} pressed')
             time.sleep(0.02)
             num1, num2, operator, list_of_chars = char_to_math_variables(b, list_of_chars, num1, num2, operator)
-            lcd.write(1, f'{str(num1)} {operator} {str(num2)}')
-           
-            sum = calc(num1, operator, num2)
-            print("sum is now: ", sum)
-            lcd.write(2, str(sum))
-            num1 = sum
-
-
+            if operator == '':
+                lcd.write(1, f'{str(num1)}')
+            elif b in "+-/*":
+                num1 = temp_sum
+                lcd.write(1, f'{str(num1)} {operator}')
+            else:
+                lcd.write(1, f'{str(num1)} {operator} {str(num2)}')
+            temp_sum = calc(num1, operator, num2)
+            lcd.write(2, str(temp_sum))
+            
+            
 def char_to_math_variables(b, list_of_chars, num1, num2, operator):
-    num = 0
-    if b in '0123456789':
+    if b.isdigit():
         list_of_chars.append(b)
         if list_of_chars:
-            num =  int(''.join([str(item) for item in list_of_chars]))
+            if operator:
+                num2 = int(''.join([str(item) for item in list_of_chars]))
+            else:
+                num1 = int(''.join([str(item) for item in list_of_chars]))
     else:
         operator = b
         list_of_chars = []
-    
-    if operator:
-        num2 = num
-    else:
-        num1 = num
-
+        if b == '/' or b == '*':
+            num2 = 1 # prevent zerodiv error when evaluating before num2 is entered
+        else:
+            num2 = 0 # make room for new calculation
     return num1, num2, operator, list_of_chars
 
 
 def calc(num1, operator, num2):
     if operator == "+":
-        print("num1, oper, num2 : ", num1, operator, num2)
-        print("return is: ", (int(num1) + int(num2)) )
         return int(num1) + int(num2)
     elif operator == "-":
         return int(num1) - int(num2)
     elif operator == "/":
-        return float(int(num1) / int(num2))
+        try:
+            if (float(int(num1) / int(num2))).is_integer():
+                return int(int(num1) / int(num2))
+            else:
+                return float(int(num1) / int(num2))
+        except ZeroDivisionError:
+            lcd.write(2, "Zero Division Error")
+            time.sleep(2)
+            clear()
+        
     elif operator == "*":
         return int(num1) * int(num2)
     elif operator == 'C':
         clear()
-    else:
+    else: # TODO that leaves # to be done
         return int(num1)
 
 def clear():
