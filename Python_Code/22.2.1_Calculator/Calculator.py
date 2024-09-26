@@ -149,6 +149,7 @@ handle = pi.i2c_open(1, ADRESS, 0)
 lcd = LCD(pi)
 kp = MatrixKeypad(pi)
 
+
 def loop():
     temp_sum = 0
     num1 = 0
@@ -163,14 +164,14 @@ def loop():
             time.sleep(0.02)
             num1, num2, operator, list_of_chars = char_to_math_variables(b, list_of_chars, num1, num2, operator)
             if operator == '':
-                lcd.write(1, f'{str(num1)}')
+                lcd.write(1, align_right(f'{str(num1)}'))
             elif b in "+-/*":
                 num1 = temp_sum
-                lcd.write(1, f'{str(num1)} {operator}')
+                lcd.write(1, align_right(f'{str(num1)} {operator}'))
             else:
-                lcd.write(1, f'{str(num1)} {operator} {str(num2)}')
+                lcd.write(1, align_right(f'{str(num1)} {operator} {str(num2)}'))
             temp_sum = check_floats(calc(num1, operator, num2))
-            lcd.write(2, str(temp_sum))
+            lcd.write(2, align_right(str(temp_sum)))
             
             
 def char_to_math_variables(b, list_of_chars, num1, num2, operator):
@@ -189,7 +190,7 @@ def char_to_math_variables(b, list_of_chars, num1, num2, operator):
                     num1 = int(''.join([str(item) for item in list_of_chars]))
     else:
         operator = b
-        list_of_chars = []
+        list_of_chars = [] # empty content for fresh new number
         if b == '/' or b == '*':
             num2 = 1 # prevent zerodiv error when evaluating before num2 is entered
         else:
@@ -206,10 +207,11 @@ def calc(num1, operator, num2):
         return num1 - num2
     elif operator == "/":
         try:
-            if (float(int(num1) / int(num2))).is_integer():
-                return int(int(num1) / int(num2))
-            else:
-                return float(int(num1) / int(num2))
+            # if (float(int(num1) / int(num2))).is_integer():
+            #     return int(int(num1) / int(num2))
+            # else:
+            #     return float(int(num1) / int(num2))
+            return num1 / num2
         except ZeroDivisionError:
             lcd.write(2, "Zero Division Error")
             time.sleep(2)
@@ -226,6 +228,14 @@ def check_floats(s):
         return int(s)
     else:
         return float(s)
+    
+# I tried aligning to the right by sending the 0x1C command to the LCD but this 
+# returned unexpected results when using 2 lines. Same for 0x05
+# this function proved far easier...
+def align_right(string):
+    length = len(string)
+    return ((16 - length) * " ") + string
+
 
 def clear():
     lcd.clear()
@@ -240,6 +250,7 @@ def destroy():
 if __name__ == "__main__":
     print ('Program is starting ... \n')
     kp.setup()
+    lcd.command_to_lcd(0x00)
     try:
         loop()
     except KeyboardInterrupt:        # Press ctrl-c to end the program.
