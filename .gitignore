@@ -10,5 +10,7 @@
 ### Above combination will ignore all files without extension ###
 
 *.pyc
+*.hpp
+*.cpp
 /.DS_Store
 /Python_GPIOZero_Code
