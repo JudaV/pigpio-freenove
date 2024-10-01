@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
     }
     setup(ledPin, sensorPin);
     signal(SIGINT, intHandler);
-    int x, i, bit = 0;
+
     while (keepRunning)
     {
         gpioWrite(ledPin, 0);
