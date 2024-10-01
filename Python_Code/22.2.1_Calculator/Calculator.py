@@ -239,7 +239,6 @@ def align_right(string):
 
 def clear():
     lcd.clear()
-    loop()
 
 def destroy():
     pi.i2c_close(handle)
