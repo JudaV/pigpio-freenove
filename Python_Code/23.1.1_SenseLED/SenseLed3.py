@@ -21,6 +21,7 @@ def loop():
 
 
 def destroy():
+    pi.write(ledPin, 0)
     pi.stop()
     print(f"\nbye\n")
 
