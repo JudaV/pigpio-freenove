@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
     }
     setup(rowPins, colPins);
     signal(SIGINT, intHandler);
-    int x, i, bit = 0;
+
     while (keepRunning)
     {
 
