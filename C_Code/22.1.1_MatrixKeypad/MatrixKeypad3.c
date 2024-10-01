@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
                     // read the keypad list to get the correct character
                     char pressedKey = keys[j][i];
                     printf("pressed: %c\n", pressedKey);
-                    gpioSleep(PI_TIME_RELATIVE, 1, 500); // wait 0.1s
+                    gpioSleep(PI_TIME_RELATIVE, 1, 500); // wait 1,5s
                 }
             }
             gpioWrite(colPins[i], 1); // col could read, and back to silent
