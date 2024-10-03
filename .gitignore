@@ -12,5 +12,6 @@
 *.pyc
 *.hpp
 *.cpp
+/.vscode
 /.DS_Store
 /Python_GPIOZero_Code
