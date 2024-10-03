@@ -59,7 +59,6 @@ void setup(int trigPin, int echoPin)
 {
     gpioSetMode(trigPin, PI_OUTPUT);
     gpioSetMode(echoPin, PI_INPUT);
-    // gpioSetPullUpDown(echoPin, PI_PUD_DOWN);
     gpioGlitchFilter(echoPin, 100);
 }
 
@@ -82,7 +81,6 @@ void receiveCallBack(int gpio, int level, uint32_t tick)
     {
         lowTick = tick; // level 0 means falling edge
     }
-    // printf("highTick: %d, lowTick %d\n", highTick, lowTick);
     if ((highTick > 0) && (lowTick > 0))
     {
         pulseTime = (lowTick - highTick); // lowTick is later, higher number
