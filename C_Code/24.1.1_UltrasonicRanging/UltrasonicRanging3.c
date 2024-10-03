@@ -10,7 +10,7 @@ int echoPin = 24;
 uint32_t highTick = 0;
 uint32_t lowTick = 0;
 uint32_t pulseTime = 0;
-float distance;
+double distance;
 
 volatile int keepRunning = 1;
 void intHandler(int dummy);
@@ -86,11 +86,10 @@ void receiveCallBack(int gpio, int level, uint32_t tick)
     if ((highTick > 0) && (lowTick > 0))
     {
         pulseTime = (lowTick - highTick); // lowTick is later, higher number
-
-        if (pulseTime < 10000) // filter missed ticks
+        if (pulseTime < 10000)            // filter missed ticks
         {
             printf("pulse_time: %d\n", pulseTime);
-            distance = (float)(17 * pulseTime / 1000);
+            distance = (float)((17 * pulseTime) / 1000.0);
             printf("The distance is:  %.2f cm\n", distance);
         }
     }
