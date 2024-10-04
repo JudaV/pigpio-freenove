@@ -1,4 +1,13 @@
-/* gcc -o MatrixKeypad3 MatrixKeypad3.c -lpigpio -lpthread */
+/*
+ * Filename:    MatrixKeypad3.c
+ * Project:     Freenove kit using pigpio C and Python library
+ * Description: use of LCD 1602 display
+ * Author:      JudaV
+ * date:        october 2024
+ * compile:     gcc -o MatrixKeypad3 MatrixKeypad3.c -lpigpio -lpthread
+ *              or with makefile:  make
+ * usage:       sudo ./MatrixKeypad3
+ */
 
 #include <pigpio.h>
 #include <stdio.h>
@@ -37,7 +46,6 @@ int main(int argc, char *argv[])
 
     while (keepRunning)
     {
-
         // set colums one by one low,
         // then measure rows
         // then set cols high again

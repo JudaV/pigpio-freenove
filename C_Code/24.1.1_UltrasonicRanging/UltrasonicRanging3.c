@@ -1,4 +1,13 @@
-/* gcc -o UltrasonicRanging3 UltrasonicRanging3.c -lpigpio -lpthread */
+/*
+ * Filename:    UltrasonicRanging3.c
+ * Project:     Freenove kit using pigpio C and Python library
+ * Description: use of LCD 1602 display
+ * Author:      JudaV
+ * date:        october 2024
+ * compile:     gcc -o UltrasonicRanging3 UltrasonicRanging3.c -lpigpio -lpthread
+ *              or with makefile:  make
+ * usage:       sudo ./UltrasonicRanging3
+ */
 
 #include <pigpio.h>
 #include <stdio.h>
@@ -35,10 +44,10 @@ int main(int argc, char *argv[])
     while (keepRunning)
     {
         trigger();
-        gpioSetAlertFunc(echoPin, receiveCallBack);
-        gpioSetAlertFunc(echoPin, receiveCallBack);
+        gpioSetAlertFunc(echoPin, receiveCallBack); // catch rising edge
+        gpioSetAlertFunc(echoPin, receiveCallBack); // catch falling edge
         gpioSleep(PI_TIME_RELATIVE, 1, 0);
-        highTick = 0;
+        highTick = 0; // to start measuring again
         lowTick = 0;
     }
 

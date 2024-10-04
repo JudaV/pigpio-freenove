@@ -1,21 +1,31 @@
+/*
+ * Filename: Tablelamp3.c
+ * Project: Freenove kit using pigpio C and Python library
+ * Description: using push button tot change state of LED
+ * Author: JudaV
+ * date: october 2024
+ * compile:     gcc -o Tablelamp3 Tablelamp3.c -lrt -lpigpio -lpthread
+ * usage:       sudo ./Tablelamp3
+ */
 
 #include <pigpio.h>
 #include <stdio.h>
 #include <signal.h>
 
-const int LED = 17;                 // define the ledPin
-const int Button = 18;              // define the buttonPin
+const int LED = 17;    // define the ledPin
+const int Button = 18; // define the buttonPin
 
-int ledState = 0;                   // store the State of led
-int buttonState = 1;                // store the State of button
-int lastbuttonState = 1;            // store the lastState of button
-long lastChangeTime;                // store the change time of button state
-long captureTime=50000;             // set the stable time as 50000 microsec ie 50ms
+int ledState = 0;         // store the State of led
+int buttonState = 1;      // store the State of button
+int lastbuttonState = 1;  // store the lastState of button
+long lastChangeTime;      // store the change time of button state
+long captureTime = 50000; // set the stable time as 50000 microsec ie 50ms
 int reading;
 volatile int keepRunning = 1;
 
-void intHandler(int dummy) {
-    keepRunning = 0; 
+void intHandler(int dummy)
+{
+    keepRunning = 0;
 }
 
 int main(int argc, char *argv[])
@@ -26,32 +36,34 @@ int main(int argc, char *argv[])
         return 1;
     }
     printf("GPIO interface initialized, using GPIO-pins %d and %d \n", LED, Button);
-    gpioSetMode(LED, PI_OUTPUT);            // Set ledPin to output
-    gpioSetMode(Button, PI_INPUT);          // Set buttonPin to input
-    gpioSetPullUpDown(Button, PI_PUD_UP);   // pull up Button state to high level
-    signal(SIGINT, intHandler);             // upon ^C the signal function is called to terminate the process;
-	                                        // intHandler will change the variable keepRunning form 1 to 0
-	                                        // now the infinite while loop will end, and main will stop gracefully
+    gpioSetMode(LED, PI_OUTPUT);          // Set ledPin to output
+    gpioSetMode(Button, PI_INPUT);        // Set buttonPin to input
+    gpioSetPullUpDown(Button, PI_PUD_UP); // pull up Button state to high level
+    signal(SIGINT, intHandler);           // upon ^C the signal function is called to terminate the process;
+                                          // intHandler will change the variable keepRunning form 1 to 0
+                                          // now the infinite while loop will end, and main will stop gracefully
 
-	while(keepRunning)
+    while (keepRunning)
     {
-        reading = gpioRead(Button);       // read the current state of button
-        if( reading != lastbuttonState){  // if the button state has changed, record the time point
+        reading = gpioRead(Button); // read the current state of button
+        if (reading != lastbuttonState)
+        { // if the button state has changed, record the time point
             lastChangeTime = gpioTick();
         }
-        // if changing-state of the button last beyond the time we set, we consider that 
+        // if changing-state of the button last beyond the time we set, we consider that
         // the current button state is an effective change rather than a bouncing
-        if(gpioTick() - lastChangeTime > captureTime)
+        if (gpioTick() - lastChangeTime > captureTime)
         {
             // if button state is changed, update the data.
-            if(reading != buttonState)
+            if (reading != buttonState)
             {
                 buttonState = reading;
-                //if the state is low, it means the action is pressing
-                if(buttonState == 0){
+                // if the state is low, it means the action is pressing
+                if (buttonState == 0)
+                {
                     printf("Button is pressed\n");
-                    ledState = !ledState; //Reverse the LED state
-                    if(ledState)
+                    ledState = !ledState; // Reverse the LED state
+                    if (ledState)
                     {
                         printf("turn on LED\n");
                     }
@@ -60,8 +72,8 @@ int main(int argc, char *argv[])
                         printf("turn off LED\n");
                     }
                 }
-                //if the state is high, it means the action is releasing
-                else 
+                // if the state is high, it means the action is releasing
+                else
                 {
                     printf("Button is released\n");
                 }

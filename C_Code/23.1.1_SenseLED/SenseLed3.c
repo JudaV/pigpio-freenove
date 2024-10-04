@@ -1,4 +1,13 @@
-/* gcc -o SenseLed3 SenseLed3.c -lpigpio -lpthread */
+/*
+ * Filename:    SenseLED3.c
+ * Project:     Freenove kit using pigpio C and Python library
+ * Description: use of LCD 1602 display
+ * Author:      JudaV
+ * date:        october 2024
+ * compile:     gcc -o SenseLED3 SenseLED3.c -lpigpio -lpthread
+ *              or with makefile:  make
+ * usage:       sudo ./SenseLED3
+ */
 
 #include <pigpio.h>
 #include <stdio.h>
@@ -50,7 +59,7 @@ void intHandler(int dummy)
 }
 
 /* The sensor will output high on sensing and low if not.
-   So the sensorPin, needs to be pull down (set to) on not
+   So the sensorPin, needs to be pulled down (set to) on not
    sensing. */
 void setup(int ledPin, int sensorPin)
 {
