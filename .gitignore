@@ -9,9 +9,36 @@
 
 ### Above combination will ignore all files without extension ###
 
+#### except makefiles
+!makefile
+!Makefile
+
+#####
+
 *.pyc
 *.hpp
 *.cpp
 /.vscode
 /.DS_Store
 /Python_GPIOZero_Code
+C_Code/01.1.1_Blink/Blink.c
+C_Code/07.1.1_ADC/PCF8591.c
+C_Code/16.1.1_SteppingMotor/wave2.c
+C_Code/16.1.1_SteppingMotor/wave.c
+C_Code/27.2.1_LightWater03/LightWater03.c
+C_Code/02.1.1_ButtonLED/ButtonLED.c
+C_Code/02.2.1_Tablelamp/Tablelamp.c
+C_Code/03.1.1_LightWater/LightWater.c
+C_Code/04.1.1_BreathingLED/BreathingLED.c
+C_Code/05.1.1_ColorfulLED/ColorfulLED.c
+C_Code/06.1.1_Doorbell/Doorbell.c
+C_Code/06.2.1_Alertor/Alertor.c
+C_Code/14.1.1_Relay/Relay.c
+C_Code/15.1.1_Sweep/Sweep.c
+C_Code/16.1.1_SteppingMotor/wave.c
+C_Code/17.1.1_LightWater02/LightWater02.c
+C_Code/18.1.1_SevenSegmentDisplay/SevenSegmentDisplay.c
+C_Code/19.1.1_LEDMatrix/LEDMatrix.c
+C_Code/20.1.1_I2CLCD1602/I2CLCD1602.c
+C_Code/23.1.1_SenseLED/SenseLED.c
+C_Code/24.1.1_UltrasonicRanging/UltrasonicRanging.c
