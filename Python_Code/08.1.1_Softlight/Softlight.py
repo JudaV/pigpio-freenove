@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-########################################################################
+#######################################################################
 # Filename    : ADC.py
 # Description : Use ADC module to read the voltage value of potentiometer.
 # Author      : www.freenove.com

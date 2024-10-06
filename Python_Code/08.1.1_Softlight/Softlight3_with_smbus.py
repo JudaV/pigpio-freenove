@@ -1,3 +1,11 @@
+
+# Filename: softlight3.py
+# Project: Freenove kit using pigpio C and Python library
+# Description: smbus + use 8591 ADC chip to control LED with potentiometer
+# Author: JudaV
+# date: october 2024
+
+
 import smbus
 import time
 import curses

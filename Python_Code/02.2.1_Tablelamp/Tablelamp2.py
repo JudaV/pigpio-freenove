@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-########################################################################
+#######################################################################
 # Filename    : Tablelamp.py
 # Description : DIY MINI table lamp
 # Author      : www.freenove.com

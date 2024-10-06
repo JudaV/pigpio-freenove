@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-########################################################################
+#######################################################################
 # Filename    : Alertor.py
 # Description : Make Alertor with buzzer and button
 # Author      : www.freenove.com

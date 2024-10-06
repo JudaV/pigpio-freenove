@@ -2,7 +2,7 @@
 #  Pulse Width Modulation (PWM) demo to cycle brightness of an LED
 
 import RPi.GPIO as GPIO   # Import the GPIO library.
-import time								# Import time library
+import time							# Import time library
 
 GPIO.setmode(GPIO.BOARD)  # Set Pi to use pin number when referencing GPIO pins.
                           # Can use GPIO.setmode(GPIO.BCM) instead to use

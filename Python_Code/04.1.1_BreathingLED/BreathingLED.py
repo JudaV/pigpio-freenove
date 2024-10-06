@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-########################################################################
+#######################################################################
 # Filename    : BreathingLED.py
 # Description : Breathing LED
 # Author      : www.freenove.com

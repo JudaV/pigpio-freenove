@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-########################################################################
+#######################################################################
 # Filename    : ColorfulLED.py
 # Description : Random color change ColorfulLED
 # Author      : www.freenove.com

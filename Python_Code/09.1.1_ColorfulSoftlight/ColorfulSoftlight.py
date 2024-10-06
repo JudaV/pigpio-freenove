@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#############################################################################
+#########################################################################
 # Filename    : Softlight.py
 # Description : Control RGBLED with Potentiometer
 # Author      : www.freenove.com

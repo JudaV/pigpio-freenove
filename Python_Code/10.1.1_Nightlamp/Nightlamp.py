@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#############################################################################
+############################################################################
 # Filename    : Nightlamp.py
 # Description : Control LED with Photoresistor
 # Author      : www.freenove.com

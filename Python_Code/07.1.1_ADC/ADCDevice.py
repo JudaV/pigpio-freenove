@@ -5,7 +5,7 @@ class ADCDevice(object):
         self.cmd = 0
         self.address = 0
         self.bus=smbus.SMBus(1)
-        # print("ADCDevice init")
+        # print("ADCDevice init ")
         
     def detectI2C(self,addr):
         try:

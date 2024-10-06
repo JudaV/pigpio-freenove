@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-########################################################################
+#######################################################################
 # Filename    : Blink.py
 # Description : Basic usage of GPIO. Let led blink.
 # auther      : www.freenove.com

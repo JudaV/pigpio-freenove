@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#############################################################################
+########################################################################
 # Filename    : Thermometer.py
 # Description : DIY Thermometer
 # Author      : www.freenove.com
