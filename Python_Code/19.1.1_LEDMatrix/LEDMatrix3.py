@@ -1,3 +1,9 @@
+# Filename: LEDMatrix3.py
+# Project: Freenove kit using pigpio C and Python library
+# Description: control an LED Matrix with 74HC595 shift registers
+# Author: JudaV
+# date: october 2024
+
 import pigpio
 import time
 

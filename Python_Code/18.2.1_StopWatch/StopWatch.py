@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#############################################################################
+##########################################################################
 # Filename    : StopWatch.py
 # Description : Control 4_Digit_7_Segment_Display with 74HC595
 # Author      : www.freenove.com

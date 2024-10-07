@@ -1,3 +1,10 @@
+# Filename: LCD4.py
+# Project: Freenove kit using pigpio C and Python library
+# Description: control an 1602 LCD display  defined as Python Class
+# Author: JudaV
+# date: october 2024
+
+
 """  File connecting LCD1602 to pi through i2c using the pigpio library 
 the connection of the pins as follows
 
@@ -127,7 +134,6 @@ def get_time_now():  # get system time
 def loop():
     lcd.write(1, (get_cpu_temp()))  # write CPU temp to first line of lcd
     lcd.write(2, (get_time_now()))
-
     lcd.write_strings_input()
     time.sleep(5)
     lcd.write(1, "first line")

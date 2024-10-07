@@ -1,7 +1,7 @@
 /*
  * Filename:    UltrasonicRanging3.c
  * Project:     Freenove kit using pigpio C and Python library
- * Description: use of LCD 1602 display
+ * Description: read from a HC SR04 ultrasonic ranging module
  * Author:      JudaV
  * date:        october 2024
  * compile:     gcc -o UltrasonicRanging3 UltrasonicRanging3.c -lpigpio -lpthread

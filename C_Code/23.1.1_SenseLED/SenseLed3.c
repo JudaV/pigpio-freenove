@@ -1,7 +1,7 @@
 /*
  * Filename:    SenseLED3.c
  * Project:     Freenove kit using pigpio C and Python library
- * Description: use of LCD 1602 display
+ * Description: read from a infrared pyroelectric sensor
  * Author:      JudaV
  * date:        october 2024
  * compile:     gcc -o SenseLED3 SenseLED3.c -lpigpio -lpthread

@@ -1,8 +1,9 @@
-#!/usr/bin/env python
+# Filename: DHT3.py
+# Project: Freenove kit using pigpio C and Python library
+# Description: read a DHT11, DHT22 thermometer
+# Author: JudaV
 # adapted and simplified from https://abyz.me.uk/rpi/pigpio/examples.html#Python%20code
-# DHT.py
-# 2019-11-07
-# Public Domain
+# date: october 2024
 
 import time
 import pigpio
@@ -234,7 +235,7 @@ if __name__ == "__main__":
     while True:
         try:
             d = s.read()
-            print(f'reading pin{PIN} with error code {d[2]}')
+            print(f"reading pin{PIN} with error code {d[2]}")
             print(
                 f'time {datetime.fromtimestamp(d[0]).strftime("%H:%M:%S")}, temp {d[3]:3.1f}, humidity {d[4]:3.1f}'
             )

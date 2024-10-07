@@ -1,6 +1,12 @@
-import pigpio
+# Filename: StopWatch3.py
+# Project: Freenove kit using pigpio C and Python library
+# Description: control a 4-digit 7-segment display with a 74HC595 shift register
+# Author: JudaV
+# date: october 2024
+
 import time
 import threading
+import pigpio
 
 pi = pigpio.pi()
 
@@ -16,7 +22,7 @@ digitPins = (17, 27, 22, 10)  # Define the pin of 7-segment display common end
 LSBFIRST = 1
 MSBFIRST = 2
 
-# numbers zero to nine to be displayed 
+# numbers zero to nine to be displayed
 num = (0xC0, 0xF9, 0xA4, 0xB0, 0x99, 0x92, 0x82, 0xF8, 0x80, 0x90)
 
 counter = 0  # Variable counter which will be dislayed by 7-segment display

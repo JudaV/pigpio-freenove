@@ -1,3 +1,9 @@
+# Filename: Lcd3.py
+# Project: Freenove kit using pigpio C and Python library
+# Description: control an 1602 LCD display
+# Author: JudaV
+# date: october 2024
+
 """  File connecting LCD1602 to pi through i2c using the pigpio library 
 the connection of the pins as follows
 
@@ -26,7 +32,7 @@ import pigpio
 import time
 from datetime import datetime
 
-pi = pigpio.pi() # Connect to local Pi.  (instantiate pigpio instance)
+pi = pigpio.pi()  # Connect to local Pi.  (instantiate pigpio instance)
 # set I2C-adress
 ADRESS = 0x27
 handle = pi.i2c_open(1, ADRESS, 0)
@@ -34,38 +40,43 @@ handle = pi.i2c_open(1, ADRESS, 0)
 
 def command_to_lcd(bit_sequence):
     bytes_to_send = bytearray(4)
-    bytes_to_send[0] = (bit_sequence&0xF0)|0x0C       # 4bit MSB first with E bit high, 
-                                                      # BL   E    RW   RS 
-                                                      # 1    1    0    0  gives 0xC
-    bytes_to_send[1] = (bit_sequence&0xF0)|0x08       # 4bit MSB E-bit low gives 0x8:  1 0 0 0 
-    bytes_to_send[2] = ((bit_sequence<<4)&0xF0)|0x0C  # 4bit LSB with E-bit high, 
-    bytes_to_send[3] = ((bit_sequence<<4)&0xF0)|0x08  # 4bit LSB with E-bit low.
+    bytes_to_send[0] = (bit_sequence & 0xF0) | 0x0C  # 4bit MSB first with E bit high,
+    # BL   E    RW   RS
+    # 1    1    0    0  gives 0xC
+    bytes_to_send[1] = (
+        bit_sequence & 0xF0
+    ) | 0x08  # 4bit MSB E-bit low gives 0x8:  1 0 0 0
+    bytes_to_send[2] = ((bit_sequence << 4) & 0xF0) | 0x0C  # 4bit LSB with E-bit high,
+    bytes_to_send[3] = ((bit_sequence << 4) & 0xF0) | 0x08  # 4bit LSB with E-bit low.
     time.sleep(0.0001)
     pi.i2c_write_device(handle, bytes_to_send)
 
 
 def data_to_lcd(bit_sequence):
     bytes_to_send = bytearray(4)
-    bytes_to_send[0] = (bit_sequence&0xF0)|0x0D        # 4bit MSB first with E bit high, 
-                                                       # BL   E    RW   RS 
-                                                       # 1    1    0    1  gives 0xD
-    bytes_to_send[1] = (bit_sequence&0xF0)|0x09        # 4bit MSB E-bit low gives 0x9: 1 0 0 1
-    bytes_to_send[2] = ((bit_sequence<<4)&0xF0)|0x0D   # 4bit LSB with E-bit high, 
-    bytes_to_send[3] = ((bit_sequence<<4)&0xF0)|0x09   # 4 bit LSB with E-bit low.
+    bytes_to_send[0] = (bit_sequence & 0xF0) | 0x0D  # 4bit MSB first with E bit high,
+    # BL   E    RW   RS
+    # 1    1    0    1  gives 0xD
+    bytes_to_send[1] = (
+        bit_sequence & 0xF0
+    ) | 0x09  # 4bit MSB E-bit low gives 0x9: 1 0 0 1
+    bytes_to_send[2] = ((bit_sequence << 4) & 0xF0) | 0x0D  # 4bit LSB with E-bit high,
+    bytes_to_send[3] = ((bit_sequence << 4) & 0xF0) | 0x09  # 4 bit LSB with E-bit low.
     time.sleep(0.0001)
     pi.i2c_write_device(handle, bytes_to_send)
 
 
 def init():
-    command_to_lcd(0x20)   # set to 4-bits
+    command_to_lcd(0x20)  # set to 4-bits
     time.sleep(0.005)
     command_to_lcd(0x20)
     time.sleep(0.005)
-    command_to_lcd(0x28)   # 4 bit , 2 lines, and 5x8bit fonts 
+    command_to_lcd(0x28)  # 4 bit , 2 lines, and 5x8bit fonts
     time.sleep(0.005)
-    command_to_lcd(0x0C)   # cursor off
+    command_to_lcd(0x0C)  # cursor off
     time.sleep(0.005)
-    command_to_lcd(0x01);  # clear screen
+    command_to_lcd(0x01)
+    # clear screen
     time.sleep(0.005)
 
 
@@ -78,24 +89,24 @@ def string_to_lcd(string):
 def write_strings_input():
     string1 = input("text for upper line: ")
     string2 = input("text for lower line: ")
-    command_to_lcd(0x01) #clear
+    command_to_lcd(0x01)  # clear
     time.sleep(0.005)
     string_to_lcd(string1)
-    command_to_lcd(0xC0) # second line
+    command_to_lcd(0xC0)  # second line
     time.sleep(0.005)
     string_to_lcd(string2)
 
 
 def get_cpu_temp():
-     # get CPU temperature from file "/sys/class/thermal/thermal_zone0/temp"
-    tmp = open('/sys/class/thermal/thermal_zone0/temp')
+    # get CPU temperature from file "/sys/class/thermal/thermal_zone0/temp"
+    tmp = open("/sys/class/thermal/thermal_zone0/temp")
     cpu = tmp.read()
     tmp.close()
-    string_to_lcd('{:.2f}'.format( float(cpu)/1000 ) + ' C')
- 
+    string_to_lcd("{:.2f}".format(float(cpu) / 1000) + " C")
+
 
 def get_time_now():  # get system time
-    string_to_lcd(datetime.now().strftime('    %H:%M:%S'))
+    string_to_lcd(datetime.now().strftime("    %H:%M:%S"))
 
 
 def setup():
@@ -108,7 +119,7 @@ def loop():
     time.sleep(0.005)
     get_time_now()
     write_strings_input()
-    
+
 
 def destroy():
     pi.i2c_close(handle)

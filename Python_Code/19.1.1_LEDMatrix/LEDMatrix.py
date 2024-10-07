@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#############################################################################
+########################################################################
 # Filename    : LEDMatrix.py
 # Description : Control LEDMatrix with 74HC595
 # auther      : www.freenove.com

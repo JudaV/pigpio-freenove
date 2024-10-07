@@ -1,9 +1,16 @@
+# Filename: Calculator.py
+# Project: Freenove kit using pigpio C and Python library
+# Description: create a calculator using a matrix keypad and 1602 LCD display
+# Author: JudaV
+# date: october 2024
+
+
 # This code uses the the LCD 1602A LCD and the 4x4 matrix keypad.
 # The matrix keypad is connected in the same way as in the other files
 # in this directory
 
-# The LCD keypad is connected to 5V, ground SDA2 and  SCL just as in 
-# chapter 20. 
+# The LCD keypad is connected to 5V, ground SDA2 and  SCL just as in
+# chapter 20.
 
 # inputs from the matrix keypad are processed to the LCD1602A
 
@@ -12,19 +19,23 @@ import time
 from pigpio import pi
 
 # pins connected for keypad
-row_pins = [18, 23, 24, 25] # BCM numbering - anodes 
-col_pins = [10, 22, 27, 17] # cathodes
+row_pins = [18, 23, 24, 25]  # BCM numbering - anodes
+col_pins = [10, 22, 27, 17]  # cathodes
 
 # This is how it looks:
 # keypad = [['1', '2', '3', 'A'], ['4', '5', '6', 'B'], ['7', '8', '9', 'C'], ['*', '0', '#', 'D']]
 
-# This how we use it now: 
+# This how we use it now:
 # A becomes plus; B becomes minus; C becomes clear; D becomes division;  TODO #
-keypad = [['1', '2', '3', '+'], ['4', '5', '6', '-'], ['7', '8', '9', 'C'], ['*', '0', '.', '/']]
+keypad = [
+    ["1", "2", "3", "+"],
+    ["4", "5", "6", "-"],
+    ["7", "8", "9", "C"],
+    ["*", "0", ".", "/"],
+]
 
 
 class LCD(pi):
-
     def __init__(self, pi) -> None:
         self.pi = pi
         self.command_to_lcd(0x20)  # set to 4-bits
@@ -110,23 +121,22 @@ class MatrixKeypad(pi):
         self.pi = pi
 
     def setup(self):
-    # the board is setup as scanning the columns by sending low levels to the cols
-    # and measuring state in the rows when the col level is low.
+        # the board is setup as scanning the columns by sending low levels to the cols
+        # and measuring state in the rows when the col level is low.
         for pin in row_pins:
-            pi.set_mode(pin, pigpio.INPUT) 
+            pi.set_mode(pin, pigpio.INPUT)
             pi.set_pull_up_down(pin, pigpio.PUD_UP)
-            
+
         for pin in col_pins:
             pi.set_mode(pin, pigpio.OUTPUT)
 
-
     def record_char(self):
         output = None
-        # set colums one by one low, 
+        # set colums one by one low,
         # then measure rows
         # then set cols high again
         for column_index, column in enumerate(col_pins):
-            pi.write(column, 0)   # one col is low now, and ready to be read
+            pi.write(column, 0)  # one col is low now, and ready to be read
             time.sleep(0.005)
             # now check the rows one by one in this column:
             for keypad_row_index, keypad_row in enumerate(row_pins):
@@ -134,10 +144,11 @@ class MatrixKeypad(pi):
                     # read the keypad list to get the correct character
                     output = keypad[keypad_row_index][column_index]
                     time.sleep(0.05)
-            pi.write(column,1)
+            pi.write(column, 1)
         return output
 
-# connect to raspberry pi IO pins:  
+
+# connect to raspberry pi IO pins:
 pi = pigpio.pi()
 
 # set I2C-adress for LCD and connect
@@ -154,47 +165,49 @@ def loop():
     temp_sum = 0
     num1 = 0
     num2 = 0
-    operator = ''
+    operator = ""
     list_of_chars = []
     while True:
         b = kp.record_char()
-        time.sleep(0.1)    
-        if b:   # if b is not None:
-            print(f'{b} pressed')
+        time.sleep(0.1)
+        if b:  # if b is not None:
+            print(f"{b} pressed")
             time.sleep(0.02)
-            num1, num2, operator, list_of_chars = char_to_math_variables(b, list_of_chars, num1, num2, operator)
-            if operator == '':
-                lcd.write(1, align_right(f'{str(num1)}'))
+            num1, num2, operator, list_of_chars = char_to_math_variables(
+                b, list_of_chars, num1, num2, operator
+            )
+            if operator == "":
+                lcd.write(1, align_right(f"{str(num1)}"))
             elif b in "+-/*":
                 num1 = temp_sum
-                lcd.write(1, align_right(f'{str(num1)} {operator}'))
+                lcd.write(1, align_right(f"{str(num1)} {operator}"))
             else:
-                lcd.write(1, align_right(f'{str(num1)} {operator} {str(num2)}'))
+                lcd.write(1, align_right(f"{str(num1)} {operator} {str(num2)}"))
             temp_sum = check_floats(calc(num1, operator, num2))
             lcd.write(2, align_right(str(temp_sum)))
-            
-            
+
+
 def char_to_math_variables(b, list_of_chars, num1, num2, operator):
     if b in "01234567890.":
         list_of_chars.append(b)
         if list_of_chars:
             if operator:
-                if '.' in list_of_chars:
-                    num2 = float(''.join([str(item) for item in list_of_chars]))
+                if "." in list_of_chars:
+                    num2 = float("".join([str(item) for item in list_of_chars]))
                 else:
-                    num2 = int(''.join([str(item) for item in list_of_chars]))
+                    num2 = int("".join([str(item) for item in list_of_chars]))
             else:
-                if '.' in list_of_chars:
-                    num1 = float(''.join([str(item) for item in list_of_chars]))
+                if "." in list_of_chars:
+                    num1 = float("".join([str(item) for item in list_of_chars]))
                 else:
-                    num1 = int(''.join([str(item) for item in list_of_chars]))
+                    num1 = int("".join([str(item) for item in list_of_chars]))
     else:
         operator = b
-        list_of_chars = [] # empty content for fresh new number
-        if b == '/' or b == '*':
-            num2 = 1 # prevent zerodiv error when evaluating before num2 is entered
+        list_of_chars = []  # empty content for fresh new number
+        if b == "/" or b == "*":
+            num2 = 1  # prevent zerodiv error when evaluating before num2 is entered
         else:
-            num2 = 0 # make room for new calculation
+            num2 = 0  # make room for new calculation
     return num1, num2, operator, list_of_chars
 
 
@@ -218,18 +231,20 @@ def calc(num1, operator, num2):
             clear()
     elif operator == "*":
         return num1 * num2
-    elif operator == 'C':
+    elif operator == "C":
         clear()
-    else: # when operator is ''
+    else:  # when operator is ''
         return num1
-    
+
+
 def check_floats(s):
     if float(s).is_integer():
         return int(s)
     else:
         return float(s)
-    
-# I tried aligning to the right by sending the 0x1C command to the LCD but this 
+
+
+# I tried aligning to the right by sending the 0x1C command to the LCD but this
 # returned unexpected results when using 2 lines. Same for 0x05
 # this function proved far easier...
 def align_right(string):
@@ -240,20 +255,21 @@ def align_right(string):
 def clear():
     lcd.clear()
 
+
 def destroy():
     pi.i2c_close(handle)
     pi.stop()
     print(f"\nbye\n")
- 
+
 
 if __name__ == "__main__":
-    print ('Program is starting ... \n')
+    print("Program is starting ... \n")
     kp.setup()
     lcd.command_to_lcd(0x00)
     try:
         loop()
-    except KeyboardInterrupt:        # Press ctrl-c to end the program.
+    except KeyboardInterrupt:  # Press ctrl-c to end the program.
         print("\nprogram stopped by Keyboard Interrupt")
-        
+
     finally:
         destroy()

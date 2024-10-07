@@ -3,7 +3,7 @@
 # Description : PCF8574 as Raspberry GPIO
 # Author      : freenove
 # modification: 2018/08/03
-########################################################################
+#######################################################################
 import smbus
 import time
 class PCF8574_I2C(object):

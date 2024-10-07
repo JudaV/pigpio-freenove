@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-########################################################################
+#######################################################################
 # Filename    : Keypad.py
 # Description : The module of matrix keypad 
 # Author      : freenove
 # modification: 2016/07/13
-########################################################################
+#######################################################################
 import RPi.GPIO as GPIO 
 import time
 #class Key:Define some of the properties of Key

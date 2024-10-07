@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-########################################################################
+#######################################################################
 # Filename    : SteppingMotor.py
 # Description : Drive SteppingMotor
 # Author      : www.freenove.com

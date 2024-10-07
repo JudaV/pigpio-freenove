@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#############################################################################
+########################################################################
 # Filename    : LightWater02.py
 # Description : Control LED with 74HC595
 # Author      : www.freenove.com

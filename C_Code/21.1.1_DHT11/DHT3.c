@@ -4,8 +4,7 @@
  * Description: use of DHT11 temp + humidity thingy
  * Author:      JudaV
  * date:        october 2024
- * written by:  knute johnson
- * adapted and simplified bij JudaV - thank you knute
+ * script by knute johnson - adapted and simplified by JudaV - thank you knute
  * compile:     gcc -o DHT3 DHT3.c -lpigpio -lpthread
  *              or with makefile:  make
  * usage:       sudo ./DHT3 [help] [DHTXX] [loop] [nn]

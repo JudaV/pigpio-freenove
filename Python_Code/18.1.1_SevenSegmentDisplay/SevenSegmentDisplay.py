@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#############################################################################
+########################################################################
 # Filename    : SevenSegmentDisplay.py
 # Description : Control SevenSegmentDisplay with 74HC595
 # Author      : www.freenove.com

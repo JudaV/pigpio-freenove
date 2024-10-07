@@ -47,7 +47,7 @@ class Adafruit_CharLCD(object):
 
     def __init__(self, pin_rs=25, pin_e=24, pins_db=[23, 17, 21, 22], GPIO=None):
         # Emulate the old behavior of using RPi.GPIO if we haven't been given
-        # an explicit GPIO interface to use
+        # an explicit GPIO interface to  use
         if not GPIO:
             import RPi.GPIO as GPIO
             GPIO.setwarnings(False)
