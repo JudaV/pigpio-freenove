@@ -1,6 +1,6 @@
 # Code for Freenove starter kits using pigpio
 
-The Starter kits sold by [Freenove](https://freenove.com) are a fun introduction to electronics and the use of the Raspberry Pi IO-pins.
+The Starter kits sold by [Freenove](https://freenove.com) are a fun introduction to electronics and the use of the Raspberry Pi GPIO-pins.
 One of Freenoves drawbacks is the use of of the deprecated wiringPi library, for which documentation is hard to find nowadays.
 For learning programming in C their code is useless as they switch to C++ after a few chapters without warning or explanation.
 
