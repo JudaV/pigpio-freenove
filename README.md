@@ -11,4 +11,4 @@ The first chapters in both C and Python are more or less 'hello-world-level'. Ar
 
 All the electronic projects gave the desired output on my Raspberry Pi4 using Raspbian (Buster).
 I expect them to work on all raspberry Pi 1-4 versions, but not on the  Raspberry Pi5.
-Use it at your risk of course. Suggestions, remarks, and improvements are welcome.
+Use it at your own risk of course. Suggestions, remarks, and improvements are welcome.
