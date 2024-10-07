@@ -1,10 +1,10 @@
-# Code for Freenove starter kits using pigpiod
+# Code for Freenove starter kits using pigpio
 
 The Starter kits sold by [Freenove](https://freenove.com) are a fun introduction to electronics and the use of the Raspberry Pi IO-pins.
 One of Freenoves drawbacks is the use of of the deprecated wiringPi library, for which documentation is hard to find nowadays.
 For learning programming in C their code is useless as they switch to C++ after a few chapters without warning or explanation.
 
-I re-wrote their project code  using the [pigpiod](https://abyz.me.uk/rpi/pigpio/) library, for both the C code and the python code.
+I re-wrote their project code  using the [pigpio](https://abyz.me.uk/rpi/pigpio/) library, for both the C code and the python code.
 This repository also reflects my learning curve using this library. I tried to let clarity and simplicity override being smart and concise.
 The first chapters in both C and Python are more or less 'hello-world-level'. Around chapter 20  a little more advanced programming techniques as bitwise operations, hexadecimal numbering are used.
 
